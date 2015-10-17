@@ -1,0 +1,35 @@
+<h1>Trainingstage</h1>
+<ul>
+    <li ng-repeat="day in days | orderBy:'id'">{{day.name}}
+        <ul>
+            <li ng-repeat="set in getSetsOfDay(day.id) | orderBy:'order'">{{set.name}}: {{set.repetitions}} {{getWeigth(set.weight)}}</li>
+        </ul>
+    </li>
+</ul>
+
+<hr>
+
+<h1>Trainingstag</h1>
+Tag: <div style="display: inline;" ng-show="setDayName == false">
+    <div style="display: inline;" ng-model="currentDay">{{currentDay.name}}</div> <input type="button" ng-click="createNewDay()" value="Neuer Tag" style="display: inline;">
+</div>
+<div ng-show="setDayName == true">
+    <form ng-Submit="setDayName = false">
+        <input type="text" ng-model="currentDay.name">
+        <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+    </form>
+</div>
+
+<br>
+<br>
+
+<form ng-show="currentDay.name != undefined && setDayName == false">
+    <label for="name">Übung:</label>
+    <input type="text" name="name" ng-model="currentSet.name">
+    <label for="repetitions">Wiederholungen:</label>
+    <input type="number" name="repetitions" ng-model="currentSet.repetitions" min="1" step="1">
+    <label for="weigth">Gewicht (kg):</label>
+    <input type="number" name="weigth" ng-model="currentSet.weigth" min="0.1" step="0.1">
+    <br>
+    <input type="button" name="done" value="speichern" ng-click="saveSet()">
+</form>
