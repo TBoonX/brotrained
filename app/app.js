@@ -1,4 +1,4 @@
-var app = angular.module('brotrained', ['ngStorage', 'ngRoute']);
+app = angular.module('brotrained', ['ngStorage', 'ngRoute', 'angular-chartist']);
 
 app.config(['$routeProvider',
     function($routeProvider) {
