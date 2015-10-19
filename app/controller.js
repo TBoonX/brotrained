@@ -290,8 +290,13 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
     $chart.on('mouseenter', '.ct-point', function(a) {
         var $point = $(this),
             value = $point.attr('ct:value');
-        //console.log($point.parent());
+        console.log($point);
+        var position = $point.position();
         var seriesName = $point.parent().attr('ct:series-name');
+        $toolTip.css("position","absolute");
+        $toolTip.css("floating","true");
+        $toolTip.css("left", position.left+"px");
+        $toolTip.css("top", position.top);
         $toolTip.html(seriesName + '<br>' + value).show();
     });
 
