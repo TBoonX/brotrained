@@ -81,6 +81,23 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         console.log(angular.toJson($scope.$storage.days));
         console.log("sets:");
         console.log(angular.toJson($scope.$storage.sets));
+        
+        //create object
+        var workout = {
+            days: $scope.$storage.days,
+            sets: $scope.$storage.sets
+        };
+        //create file
+        var filename = "workout.json";
+        var b=document.createElement('a');
+        b.download=filename;
+        b.textContent=filename;
+        b.href='data:application/json;base64,'+
+            window.btoa(unescape(encodeURIComponent(angular.toJson(workout))));
+        //download file
+        var e=document.createEvent('Events');
+        e.initEvent('click',true,false);
+        b.dispatchEvent(e);
     };
     
     $scope.reuseSet = function(set) {
@@ -173,6 +190,53 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         });
         return ret;
     };
+    
+    var loadSelectedFile = function(evt) {
+        var files = evt.target.files; // FileList object
+        console.log(evt);
+        // Loop through the FileList
+        for (var i = 0, f; f = files[i]; i++) {
+            console.log(f);
+            // Only process json
+            if (!f.name.endsWith('.json')) {
+                continue;
+            }
+
+            var reader = new FileReader();
+
+            // Closure to capture the file information.
+            reader.onload = (function(theFile) {
+                return function(e) {
+                    var json;
+                    try {
+                        var str = atob(e.target.result.substring(13, e.target.result.length));
+                        str = decodeURIComponent(escape(str));
+                        console.log(str);
+                        json = JSON.parse(str);
+                        console.log(json);
+                    }
+                    catch(err) {
+                        json = {};
+                    }
+                    if (json.days == undefined || json.sets == undefined)
+                    {
+                        alert("Falsche Datei!");
+                        return;
+                    }
+                    
+                    $scope.$storage.sets = json.sets;
+                    $scope.$storage.days = json.days;
+                    
+                    location.reload();
+                };
+            })(f);
+
+            // Read in the image file as a data URL.
+            reader.readAsDataURL(f);
+        }
+    };
+
+    document.getElementById('file').addEventListener('change', loadSelectedFile, false);
 });
 
 //'angular-chartist'
@@ -189,13 +253,9 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
     
     // line chart
     $scope.$storage.chart.lineData = {
-        labels: ['Monday<br>OMG', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        labels: ['dummy'],
         series: [
-            [0, 1, 2, 4, 7],
-            [0, 1, 2, 4, 4],
-            [0, 1, 3, 4, 6],
-            [0, 1, 3, 5, 7],
-            [0, 1, 3, 3, 7]
+            [0, 1]
         ]
     };
 

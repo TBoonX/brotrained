@@ -48,7 +48,15 @@ Tag: <div style="display: inline;" ng-show="setDayName == false">
 </ul>
 
 <br>
-<input type="button" value="JSONs ausgeben" ng-click="printJsons()">
+<div>
+    Export:
+    <input type="button" value="Als Datei speichern" ng-click="printJsons()">
+</div>
+<br>
+<div ng-hide="$storage.days.length != 0">
+    Import:
+    <input type="file" id="file" value="von Datei lesen" name="file" />
+</div>
 
 
 <div>
