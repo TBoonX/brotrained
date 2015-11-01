@@ -1,6 +1,7 @@
 //var app = angular.module('brotrained');
 
 app.controller('maincontroller', function($scope, $localStorage, $sessionStorage) {
+    //Init
     $scope.$storage = $localStorage;
 
     if ($scope.$storage.days == undefined || $scope.$storage.days == null)  {
@@ -15,6 +16,11 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
     $scope.currentSet = {};
     $scope.currentDay = undefined;
     
+    
+    ////////////////////
+    // Functions
+    
+    //return used weight in kg
     $scope.getWeight = function(weight) {
         if (weight === undefined || weight === null)
             return "";
@@ -22,7 +28,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return "("+weight+"kg)";
     };
     
-    
+    //return max(day.id)+1
     $scope.getNewId = function() {
         var id = 0;
         $scope.$storage.days.forEach(function(day) {
@@ -33,7 +39,9 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return id+1;
     };
     
+    //Init new day and save it
     $scope.createNewDay = function() {
+        //reset order for new sets
         $scope.order = 1;
         
         $scope.currentDay = new Object();
@@ -49,6 +57,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         console.log($scope.currentDay);
     };
     
+    //return sets of day.id
     $scope.getSetsOfDay = function(id) {
         var sets = [];
         $scope.$storage.sets.forEach(function(set) {
@@ -58,20 +67,25 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return sets;
     };
     
+    //create set and save it to the current day
     $scope.saveSet = function() {
         if ($scope.currentSet.name == undefined || $scope.currentSet.name == null || $scope.currentSet.name == "")
             return;
         
         $scope.currentSet.day = $scope.currentDay.id;
-        $scope.currentSet.order = $scope.order;
         $scope.currentSet.date = new Date();
+        $scope.currentSet.order = $scope.order;
         $scope.order = $scope.order + 1; 
         $scope.$storage.sets.push($scope.currentSet);
         $scope.currentSet = new Object();
     };
     
+    //return date description
     $scope.getTime = function(date) {
         var days = ["So","Mo","Di","Mi","Do","Fr","Sa"];
+        
+        if (date == undefined || date == null)
+            return "";
         
         if (typeof date == "string")
             date = new Date(date);
@@ -79,60 +93,58 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return days[date.getDay()] + " " + date.toLocaleString();
     };
     
-    $scope.printJsons = function() {
-        console.log("days:");
-        console.log(angular.toJson($scope.$storage.days));
-        console.log("sets:");
-        console.log(angular.toJson($scope.$storage.sets));
-        
-        //create object
-        var workout = {
-            days: $scope.$storage.days,
-            sets: $scope.$storage.sets
-        };
-        //create file
-        var filename = "workout.json";
-        var b=document.createElement('a');
-        b.download=filename;
-        b.textContent=filename;
-        b.href='data:application/json;base64,'+
-            window.btoa(unescape(encodeURIComponent(angular.toJson(workout))));
-        //download file
-        var e=document.createEvent('Events');
-        e.initEvent('click',true,false);
-        b.dispatchEvent(e);
-    };
-    
+    //use existing set for a new set (filling form)
     $scope.reuseSet = function(set) {
         $scope.currentSet = angular.copy(set);
     };
 
+    //set selected day as current day to add sets
     $scope.reuseDay = function(day) {
         $scope.currentDay = angular.copy(day);
-        $scope.$storage.sets.forEach(function(set) {
-            if (set.day == $scope.currentDay.id)
-                if (set.order > $scope.order)
-                    $scope.order = set.order+1;
-        });
+        //use max(sets.order)
+        $scope.order = getHighestOrderOfDay(day.id);
     };
+    
+    //trigger visibility of sets to a day
     $scope.hideSetsOfDay = function(day) {
-        var hidden = false;
-        hidden = day.hidden;
+        var hidden = day.hidden;
         if (hidden === true)
             day.hidden = undefined;
         else
             day.hidden = true;
     };
     
+    //update set
     $scope.saveSetAgain = function(set) {
         set.edit = undefined;
     };
     
-    $scope.deleteSet = function(set) {
-        $scope.$storage.sets.pop(set);
-        set = new Object();
+    //private function to compare sets (equal)
+    var compareSets = function(e, set) {
+        if (e.day == set.day 
+            && e.order == set.order 
+            && e.name == set.name
+            && e.repetitions == set.repetitions
+            && e.weight == set.weight
+            && $scope.getTime(e.date) == $scope.getTime(set.date))
+            return true;
+        return false;
     };
     
+    //delet set
+    $scope.deleteSet = function(set) {
+        console.log(set);
+        var newSets = [];
+        $scope.$storage.sets.forEach(function(e) {
+            if (!compareSets(e, set))
+                newSets.push(e);
+            else
+                console.log(e);
+        });
+        $scope.$storage.sets = newSets;
+    };
+    
+    //increase order of set
     $scope.up = function(set) {
         if (set.order == 1)
             return;
@@ -153,6 +165,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         }
     };
 
+    //decrease order of set
     $scope.down = function(set) {
         var highestOrder = getHighestOrderOfDay(set.day);
 
@@ -176,6 +189,41 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         }
     };
     
+    /*
+     * Export part
+     */
+
+    //download days and sets as JSON
+    $scope.downloadJsons = function() {
+        console.log("days:");
+        console.log(angular.toJson($scope.$storage.days));
+        console.log("sets:");
+        console.log(angular.toJson($scope.$storage.sets));
+
+        //create object
+        var workout = {
+            days: $scope.$storage.days,
+            sets: $scope.$storage.sets
+        };
+        //create file
+        var filename = "workout.json";
+        var b=document.createElement('a');
+        b.download=filename;
+        b.textContent=filename;
+        b.href='data:application/json;base64,'+
+            window.btoa(unescape(encodeURIComponent(angular.toJson(workout))));
+        //download file
+        var e=document.createEvent('Events');
+        e.initEvent('click',true,false);
+        b.dispatchEvent(e);
+    };
+    
+    /*
+     * Import part
+     */
+    
+    
+    //private function to get max(sets.order)
     var getHighestOrderOfDay = function(id) {
         var order = 1;
         $scope.$storage.sets.forEach(function(set) {
@@ -185,6 +233,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return order;
     };
     
+    //private function to get a set
     var getSetWithOrderAndDay = function(order, id) {
         var ret = false;
         $scope.$storage.sets.forEach(function(set) {
@@ -194,6 +243,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return ret;
     };
     
+    //function for file upload (import)
     var loadSelectedFile = function(evt) {
         var files = evt.target.files; // FileList object
         console.log(evt);
@@ -239,13 +289,16 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         }
     };
 
+    //bind file upload
     document.getElementById('file').addEventListener('change', loadSelectedFile, false);
 });
 
 //'angular-chartist'
+//first dirty version
 app.controller('chartcontroller', function($scope, $localStorage, $sessionStorage) {
-
+    //Init
     $scope.$storage = $localStorage;
+    this.setsForGraph = "";
     
     if ($scope.$storage.chart == undefined || $scope.$storage.chart == null)  {
         $scope.$storage.chart = {};
@@ -254,7 +307,7 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
         $scope.$storage.chart.days = [];
     }
     
-    // line chart
+    // init line chart
     $scope.$storage.chart.lineData = {
         labels: ['dummy'],
         series: [
@@ -262,6 +315,7 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
         ]
     };
 
+    //configure chart
     this.lineOptions = {
         axisX: {
             labelInterpolationFnc: function(value) {
@@ -270,8 +324,8 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
         }
     };
     
-    this.setsForGraph = "";
-    
+    //update function
+    //filters as setnames
     this.update = function() {
         console.log("update chart");
 
@@ -346,6 +400,8 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
         console.log($scope.$storage.chart.series);
     };
     
+    /////////////////
+    //Tooltip hack
     var $chart = $('.ct-chart');
 
     var $toolTip = $chart
