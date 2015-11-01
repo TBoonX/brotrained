@@ -365,31 +365,38 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
     var $chart = $('.ct-chart');
 
     var $toolTip = $chart
-    .append('<div class="tooltip"></div>')
-    .find('.tooltip')
-    .hide();
+    .append('<div class="tooltip2" id="mytooltip"></div>')
+    .find('.mytooltip');
+    var mytt = document.getElementById("mytooltip");
 
     $chart.on('mouseenter', '.ct-point', function(a) {
         var $point = $(this),
             value = $point.attr('ct:value');
-        //console.log($point);
         var position = $point.position();
-        var seriesName = $point.parent().attr('ct:series-name');
-        $toolTip.css("position","absolute");
-        $toolTip.css("floating","true");
-        $toolTip.css("left", position.left+"px");
-        $toolTip.css("top", position.top);
-        $toolTip.html(seriesName + '<br>' + value).show();
+        var seriesName = $point.context.parentElement.attributes['ct:series-name'].value;
+        
+        mytt.innerHTML = seriesName + '<br>' + value;
+        mytt.style.left = $point.left+"px";
+        mytt.style.top = $point.top+"px";
+        mytt.style.hidden= false;
+        
+        console.log($toolTip);
+        console.log(mytt);
     });
 
     $chart.on('mouseleave', '.ct-point', function() {
-        $toolTip.hide();
+        //$toolTip.hide();
+        mytt.style.hidden = true;
     });
 
     $chart.on('mousemove', function(event) {
-        $toolTip.css({
-            left: (event.offsetX || event.originalEvent.layerX) - $toolTip.width() / 2 - 10,
-            top: (event.offsetY || event.originalEvent.layerY) - $toolTip.height() - 40
-        });
+        
+        mytt.style.left = (event.offsetX || event.originalEvent.layerX) - $toolTip.width() / 2 - 10;
+        mytt.style.top = (event.offsetY || event.originalEvent.layerY) - $toolTip.height() - 40;
+        
+//        $toolTip.css({
+//            left: (event.offsetX || event.originalEvent.layerX) - $toolTip.width() / 2 - 10,
+//            top: (event.offsetY || event.originalEvent.layerY) - $toolTip.height() - 40
+//        });
     });
 });

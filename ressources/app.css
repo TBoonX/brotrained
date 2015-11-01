@@ -2,3 +2,12 @@
     background-color: #337ab7 !important;
     font-size: 1.3em;
 }
+
+.tooltip2 {
+    font-size: 1.2em;
+    color: black;
+    font-style: oblique;
+    z-index: 9999 !important;
+    position: absolute;
+    floating: true;
+}
