@@ -3,7 +3,8 @@
              ng-controller="chartcontroller as Chartist">
         <input type="text" 
                ng-model="Chartist.setsForGraph" 
-               class="form-control">
+               class="form-control"
+               placeholder="Hier Übungsnamen getrennt mit Komma und Leerzeichen eingeben, um zu filtern.">
         <input type="button" 
                value="Aktualisieren" 
                ng-click="Chartist.update()" 
