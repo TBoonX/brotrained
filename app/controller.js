@@ -64,6 +64,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         
         $scope.currentSet.day = $scope.currentDay.id;
         $scope.currentSet.order = $scope.order;
+        $scope.currentSet.date = new Date();
         $scope.order = $scope.order + 1; 
         $scope.$storage.sets.push($scope.currentSet);
         $scope.currentSet = new Object();
@@ -267,6 +268,8 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
         }
     };
     
+    this.setsForGraph = "";
+    
     this.update = function() {
         console.log("update chart");
 
@@ -280,11 +283,28 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
             series: [] //$scope.$storage.chart.data
         };
         
+        var setnames = this.setsForGraph.split(", ");
+        var filterSets = true;
+        
+        if (setnames.length < 1 || ( setnames.length == 1 && setnames[0] == "" ) )
+            filterSets = false;
+        
         var data = $scope.$storage.sets
-            .map(function(el, i, cont) {
-                return {day: el.day, index:el.name+" "+(el.weight>0 ? el.weight : '0')+"kg", repetitions:el.repetitions};
-            })
+            .reduce(function(prev, el, i, cont) {
+                if (filterSets && -1 != $.inArray(el.name, setnames))
+                {    
+                    prev.push({day: el.day, index:el.name+" "+(el.weight>0 ? el.weight : '0')+"kg", repetitions:el.repetitions});
+                }
+                else if (!filterSets && el.repetitions > 0)
+                {    
+                    prev.push({day: el.day, index:el.name+" "+(el.weight>0 ? el.weight : '0')+"kg", repetitions:el.repetitions});
+                }
+                return prev;
+            }, [])
             .reduce(function(previousValue, currentValue, i, cont) {
+                if (previousValue.length == 0)
+                    console.log(cont);
+                
                 var given = false;
                 previousValue.forEach(function(e) {
                     if (e.index == currentValue.index && e.day == currentValue.day)
@@ -350,7 +370,7 @@ app.controller('chartcontroller', function($scope, $localStorage, $sessionStorag
     $chart.on('mouseenter', '.ct-point', function(a) {
         var $point = $(this),
             value = $point.attr('ct:value');
-        console.log($point);
+        //console.log($point);
         var position = $point.position();
         var seriesName = $point.parent().attr('ct:series-name');
         $toolTip.css("position","absolute");
