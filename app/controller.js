@@ -71,10 +71,12 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
     };
     
     $scope.getTime = function(date) {
-        if (typeof date == "string")
-            return (new Date(date)).toLocaleString();
+        var days = ["So","Mo","Di","Mi","Do","Fr","Sa"];
         
-        return date.toLocaleString();
+        if (typeof date == "string")
+            date = new Date(date);
+        
+        return days[date.getDay()] + " " + date.toLocaleString();
     };
     
     $scope.printJsons = function() {
