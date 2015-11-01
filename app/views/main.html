@@ -1,46 +1,77 @@
-<h1>Trainingstag</h1>
-Tag: <div style="display: inline;" ng-show="setDayName == false">
-<div style="display: inline;" ng-model="currentDay">{{currentDay.name}}</div> <input type="button" ng-click="createNewDay()" value="Neuer Tag" style="display: inline;">
+<div class="page-header">
+    <h1>Trainingstag</h1>
 </div>
+<p class="lead" style="display: inline;">
+    Tag:
+    <div style="display: inline;" ng-show="setDayName == false">
+        {{currentDay.name}}
+        <input type="button" ng-click="createNewDay()" value="Neuer Tag" style="display: inline;" class="btn btn-primary">
+    </div>
+</p>
 <div ng-show="setDayName == true">
-    <form ng-Submit="setDayName = false">
-        <input type="text" ng-model="currentDay.name">
-        <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;"/>
+    <form ng-Submit="setDayName = false" class="form-inline">
+        <input type="text" ng-model="currentDay.name" class="form-control">
+        <input type="submit" style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
     </form>
 </div>
 
 <br>
 <br>
 
-<form ng-show="currentDay.name != undefined && setDayName == false">
-    <label for="name">Übung:</label>
-    <input type="text" name="name" ng-model="currentSet.name">
-    <label for="repetitions">Wiederholungen:</label>
-    <input type="number" name="repetitions" ng-model="currentSet.repetitions" min="1" step="1">
-    <label for="weight">Gewicht (kg):</label>
-    <input type="number" name="weight" ng-model="currentSet.weight" min="0.1" step="0.1">
+<form ng-show="currentDay.name != undefined && setDayName == false"
+      class="form-inline">
+    <div class="form-group">
+        <label for="name">Übung:</label>
+        <input type="text" name="name" ng-model="currentSet.name" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="repetitions">Wiederholungen:</label>
+        <input type="number" name="repetitions" ng-model="currentSet.repetitions" min="1" step="1" class="form-control">
+    </div>
+    <div class="form-group">
+        <label for="weight">Gewicht (kg):</label>
+        <input type="number" name="weight" ng-model="currentSet.weight" min="0.1" step="0.1" class="form-control">
+    </div>
     <br>
-    <input type="button" name="done" value="speichern" ng-click="saveSet()">
+    <br>
+    <input type="button" name="done" value="speichern" ng-click="saveSet()" class="btn btn-default">
 </form>
 
-<hr>
 
-<h1>Trainingstage</h1>
+
+<div class="page-header">
+    <h1>Trainingstage</h1>
+</div>
 <ul>
-    <li ng-repeat="day in $storage.days | orderBy:'id'"><div ng-click="reuseDay(day)" style="display: inline;">{{day.name}}: {{getTime(day.date)}}</div><div style="display: inline;">     <input type="button" value="{{ day.hidden==true ? '+' : '-' }}" ng-click="hideSetsOfDay(day)" style="display: inline;"></div>
+    <li ng-repeat="day in $storage.days | orderBy:'id':true">
+        <div ng-click="reuseDay(day)" style="display: inline;" ng-class="{ highlighted : currentDay.id == day.id }">
+            {{day.name}}: {{getTime(day.date)}}
+        </div>
+        <div style="display: inline;">     
+            <input type="button" value="{{ day.hidden==true ? '+' : '-' }}" ng-click="hideSetsOfDay(day)" style="display: inline;" class="btn btn-info btn-xs">
+        </div>
         <ul>
-            <li ng-repeat="set in getSetsOfDay(day.id) | orderBy:'order'" ng-click="reuseSet(set)" ng-hide="day.hidden == true">{{set.name}}: {{set.repetitions}} {{getWeight(set.weight)}} <input type="button" value="Ändern" ng-click="set.edit = true"> <input type="button" value="X" ng-click="deleteSet(set)">
-                <form ng-show="set.edit == true">
-                    <label for="name">Übung:</label>
-                    <input type="text" name="name" ng-model="set.name">
-                    <label for="repetitions">Wiederholungen:</label>
-                    <input type="number" name="repetitions" ng-model="set.repetitions" min="1" step="1">
-                    <label for="weight">Gewicht (kg):</label>
-                    <input type="number" name="weight" ng-model="set.weight" min="0.1" step="0.1">
+            <li ng-repeat="set in getSetsOfDay(day.id) | orderBy:'order'" ng-click="reuseSet(set)" ng-hide="day.hidden == true">
+                {{set.name}}: {{set.repetitions}} {{getWeight(set.weight)}} 
+                <input type="button" value="Ändern" ng-click="set.edit = true" class="btn btn-warning" ng-hide="set.edit == true"> 
+                <input type="button" value="X" ng-click="deleteSet(set)" class="btn btn-danger btn-xs">
+                <form ng-show="set.edit == true" class="form-inline">
+                    <div class="form-group">
+                        <label for="name">Übung:</label>
+                        <input type="text" name="name" ng-model="set.name" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="repetitions">Wiederholungen:</label>
+                        <input type="number" name="repetitions" ng-model="set.repetitions" min="1" step="1" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Gewicht (kg):</label>
+                        <input type="number" name="weight" ng-model="set.weight" min="0.1" step="0.1" class="form-control">
+                    </div>
                     <br>
-                    <input type="button" name="up" value="&uarr;" ng-click="up(set)">
-                    <input type="button" name="down" value="&darr;" ng-click="down(set)">
-                    <input type="button" name="done" value="speichern" ng-click="saveSetAgain(set)">
+                    <input type="button" name="up" value="&uarr;" ng-click="up(set)" class="btn btn-default btn-sm">
+                    <input type="button" name="down" value="&darr;" ng-click="down(set)" class="btn btn-default btn-sm">
+                    <input type="button" name="done" value="speichern" ng-click="saveSetAgain(set)" class="btn btn-success">
                 </form>
             </li>
         </ul>
@@ -49,26 +80,27 @@ Tag: <div style="display: inline;" ng-show="setDayName == false">
 
 <br>
 <div>
-    Export:
-    <input type="button" value="Als Datei speichern" ng-click="printJsons()">
+    Export:<br>
+    <input type="button" value="Als Datei speichern" ng-click="printJsons()" class="btn btn-default">
 </div>
 <br>
 <div ng-hide="$storage.days.length != 0">
     Import:
-    <input type="file" id="file" value="von Datei lesen" name="file" />
+    <input type="file" id="file" value="von Datei lesen" name="file" class="btn btn-default">
 </div>
 
-
+<div class="page-header">
+    <h1>Auswertung</h1>
+</div>
 <div>
     <section class="container-fluid" ng-controller="chartcontroller as Chartist">
-        <h1>Auswertung:</h1>
-        <input type="text" ng-model="Chartist.setsForGraph">
-        <input type="button" value="Aktualisieren" ng-click="Chartist.update()">
+        <input type="text" ng-model="Chartist.setsForGraph" class="form-control">
+        <input type="button" value="Aktualisieren" ng-click="Chartist.update()" class="btn btn-default">
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12">
                 <div class="panel panel-default">
                     <div class="panel-body">
-                        <chartist id="brochart" class="ct-chart ct-golden-section" chartist-data="$storage.chart.lineData" chartist-chart-type="Line" chartist-chart-options="Chartist.lineOptions" chartist-events="Chartist.events"></chartist>
+                        <chartist id="brochart" class="ct-chart ct-golden-section" chartist-data="$storage.chart.lineData" chartist-chart-type="Line" chartist-chart-options="Chartist.lineOptions" chartist-events="Chartist.events" style="font-size: 14px !important;"></chartist>
                     </div>
                 </div>
             </div>

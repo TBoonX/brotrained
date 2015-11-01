@@ -1,5 +1,4 @@
- 
-.dummy {
-    position: absolute;
-    left: 
+.highlighted {
+    background-color: #337ab7 !important;
+    font-size: 1.3em;
 }
