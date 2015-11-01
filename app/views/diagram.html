@@ -1,0 +1,27 @@
+<div>
+    <section class="container-fluid" 
+             ng-controller="chartcontroller as Chartist">
+        <input type="text" 
+               ng-model="Chartist.setsForGraph" 
+               class="form-control">
+        <input type="button" 
+               value="Aktualisieren" 
+               ng-click="Chartist.update()" 
+               class="btn btn-default">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        <chartist id="brochart" 
+                                  class="ct-chart ct-golden-section" 
+                                  chartist-data="$storage.chart.lineData" 
+                                  chartist-chart-type="Line" 
+                                  chartist-chart-options="Chartist.lineOptions" 
+                                  chartist-events="Chartist.events" 
+                                  style="font-size: 14px !important;"></chartist>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

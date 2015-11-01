@@ -1,0 +1,75 @@
+<ul>
+    <li ng-repeat="day in $storage.days | orderBy:'id':true">
+        <div ng-click="reuseDay(day)" style="display: inline;" 
+             ng-class="{ highlighted : currentDay.id == day.id }">
+            {{day.name}}: {{getTime(day.date)}}
+        </div>
+        <div style="display: inline;">     
+            <input type="button" 
+                   value="{{ day.hidden==true ? '+' : '-' }}" 
+                   ng-click="hideSetsOfDay(day)" 
+                   style="display: inline;" 
+                   class="btn btn-info btn-xs">
+        </div>
+        <ul>
+            <li ng-repeat="set in getSetsOfDay(day.id) | orderBy:'order'" 
+                ng-click="reuseSet(set)" 
+                ng-hide="day.hidden == true">
+                {{set.name}}: {{set.repetitions}} {{getWeight(set.weight)}} 
+                <input type="button"
+                       value="Ändern" 
+                       ng-click="set.edit = true" 
+                       class="btn btn-warning" 
+                       ng-hide="set.edit == true"> 
+                <input type="button" 
+                       value="X" 
+                       ng-click="deleteSet(set)" 
+                       class="btn btn-danger btn-xs">
+                <form ng-show="set.edit == true" 
+                      class="form-inline">
+                    <div class="form-group">
+                        <label for="name">Übung:</label>
+                        <input type="text" 
+                               name="name" 
+                               ng-model="set.name" 
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="repetitions">Wiederholungen:</label>
+                        <input type="number" 
+                               name="repetitions" 
+                               ng-model="set.repetitions" 
+                               min="1" 
+                               step="1" 
+                               class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="weight">Gewicht (kg):</label>
+                        <input type="number" 
+                               name="weight" 
+                               ng-model="set.weight" 
+                               min="0.1" 
+                               step="0.1" 
+                               class="form-control">
+                    </div>
+                    <br>
+                    <input type="button" 
+                           name="up" 
+                           value="&uarr;" 
+                           ng-click="up(set)" 
+                           class="btn btn-default btn-sm">
+                    <input type="button" 
+                           name="down" 
+                           value="&darr;" 
+                           ng-click="down(set)" 
+                           class="btn btn-default btn-sm">
+                    <input type="button" 
+                           name="done"
+                           value="speichern" 
+                           ng-click="saveSetAgain(set)" 
+                           class="btn btn-success">
+                </form>
+            </li>
+        </ul>
+    </li>
+</ul>
