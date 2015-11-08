@@ -15,6 +15,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
     $scope.order = 1;
     $scope.currentSet = {};
     $scope.currentDay = undefined;
+    $scope.reusableDay = 0;
     
     
     ////////////////////
@@ -39,7 +40,7 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         return id+1;
     };
     
-    //Init new day and save it
+    //Init a new day and save it
     $scope.createNewDay = function() {
         //reset order for new sets
         $scope.order = 1;
@@ -55,6 +56,42 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         $scope.$storage.days.push($scope.currentDay);
         
         console.log($scope.currentDay);
+    };
+    
+    //Start the new day with maybe a reusable day as template 
+    $scope.startNewDay = function() {
+        //angular does some magic so we get the value the standard way
+        var select = document.getElementById("reusableDaySelect");
+        var value = select.value;
+        
+        console.log(value);
+        
+        $scope.reusableDay = value;
+
+        $scope.setDayName = false;
+
+        console.log($scope.reusableDay);
+        
+        //start reusable if given
+        if ($scope.reusableDay > 0)
+            $scope.useNextSetOfResuableDay();
+    };
+    
+    //select next set of the reusable day
+    $scope.useNextSetOfResuableDay = function() {
+        var set = false;
+        var i = $scope.order;
+        var highestOrder = getHighestOrderOfDay($scope.reusableDay);
+        console.log(highestOrder);
+        
+        while (i <= highestOrder && set == false)
+        {
+            set = getSetWithOrderAndDay(i, $scope.reusableDay);
+            i++;
+        }
+        console.log(set);
+        
+        $scope.currentSet = angular.copy(set);
     };
     
     //return sets of day.id
@@ -78,6 +115,9 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         $scope.order = $scope.order + 1; 
         $scope.$storage.sets.push($scope.currentSet);
         $scope.currentSet = new Object();
+
+        if ($scope.reusableDay > 0)
+            $scope.useNextSetOfResuableDay();
     };
     
     //return date description

@@ -12,13 +12,21 @@
 </div>
 </p>
 <div ng-show="setDayName == true">
-    <form ng-Submit="setDayName = false" 
+    <form ng-Submit="startNewDay()" 
           class="form-inline">
-        <input type="text" 
-               ng-model="currentDay.name" 
-               class="form-control">
-        <input type="submit" 
-               style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+        <div class="form-group">
+            <input type="text" 
+                   ng-model="currentDay.name" 
+                   class="form-control">
+            <input type="submit" 
+                   style="position: absolute; left: -9999px; width: 1px; height: 1px;" />
+        </div>
+        <div class="form-group">
+            <label for="reusableDay">Tag als Vorlage verwenden:</label>
+            <select name="reusableDay" id="reusableDaySelect"
+                    ng-options="option.id as option.name for option in $storage.days track by option.id"
+                    ng-model="reusableDay"></select>
+        </div>
     </form>
 </div>
 
