@@ -229,6 +229,27 @@ app.controller('maincontroller', function($scope, $localStorage, $sessionStorage
         }
     };
     
+    //use day and sets of the day to calculate used time
+    $scope.calculateUsedTime = function(day){
+        var sets = $scope.getSetsOfDay(day.id);
+        var start = day.date;
+        if (typeof start == "string")
+            start = new Date(start);
+        var end = start;
+        
+        sets.forEach(function(set){
+            var date = set.date;
+            if (typeof date == "string")
+                date = new Date(date);
+            if (date > end)
+                end = date;
+        });
+        
+        var usedTime = new Date(end-start);
+        
+        return usedTime.getMinutes();
+    };
+    
     /*
      * Export part
      */

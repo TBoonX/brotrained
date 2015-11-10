@@ -2,7 +2,7 @@
     <li ng-repeat="day in $storage.days | orderBy:'id':true">
         <div ng-click="reuseDay(day)" style="display: inline;" 
              ng-class="{ highlighted : currentDay.id == day.id }">
-            {{day.name}}: {{getTime(day.date)}}
+            {{day.name}}: {{getTime(day.date)}} - {{calculateUsedTime(day)}} Minuten Dauer
         </div>
         <div style="display: inline;">     
             <input type="button" 
